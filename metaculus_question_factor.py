@@ -6,6 +6,11 @@ Metaculus Question Factors – Streamlit App
 • Pulls recent Metaculus questions (or specific IDs)
 • Calls OpenRouter LLM to generate 3–5 forecasting factors per question
 • Displays a table and lets you download a CSV
+
+SETUP (Streamlit Cloud recommended):
+1) Add a secret OPENROUTER_API_KEY in your Streamlit project
+2) (Optional) Add OPENROUTER_MODEL in secrets or env
+3) Deploy – this app never hard‑codes your key
 """
 
 import os
@@ -185,27 +190,24 @@ _cache: Dict[str, Dict[str, Any]] = {}
 
 
 def or_headers() -> Dict[str, str]:
+    """Build headers, preferring session key, then secrets/env. Raises if missing."""
     key = (
-        st.secrets.get("OPENROUTER_API_KEY")
-        if hasattr(st, "secrets")
-        else None
-    ) or os.environ.get("OPENROUTER_API_KEY", "").strip()
+        st.session_state.get("OPENROUTER_API_KEY", "").strip()
+        or (st.secrets.get("OPENROUTER_API_KEY") if hasattr(st, "secrets") else "")
+        or os.environ.get("OPENROUTER_API_KEY", "").strip()
+    )
 
     if not key:
         raise RuntimeError(
-            "Missing OPENROUTER_API_KEY. Add it in Streamlit Secrets or env vars."
+            "Missing OPENROUTER_API_KEY. Paste it in the sidebar or add it in Secrets/env."
         )
 
     title = (
-        st.secrets.get("X_TITLE")
-        if hasattr(st, "secrets")
-        else None
+        st.secrets.get("X_TITLE") if hasattr(st, "secrets") else None
     ) or os.environ.get("X_TITLE", TITLE)
 
     referer = (
-        st.secrets.get("REFERER")
-        if hasattr(st, "secrets")
-        else None
+        st.secrets.get("REFERER") if hasattr(st, "secrets") else None
     ) or os.environ.get("REFERER", "https://localhost")
 
     return {
@@ -407,12 +409,42 @@ st.caption("Generate concise, concrete forecasting factors for Metaculus questio
 
 with st.sidebar:
     st.subheader("🔐 Credentials")
-    # Key status only (never show the key)
+
+    # Let the user paste an API key directly (stored only in session state)
+    if "OPENROUTER_API_KEY" not in st.session_state:
+        st.session_state.OPENROUTER_API_KEY = ""
+
+    def _apply_key():
+        # Clear cached model list whenever the key changes
+        list_models_clean.clear()
+
+    key_input = st.text_input(
+        "OpenRouter API key",
+        value=st.session_state.OPENROUTER_API_KEY,
+        type="password",
+        help="Stored only for this browser session (in Streamlit session_state).",
+    )
+    col_a, col_b = st.columns([1,1])
+    with col_a:
+        if st.button("Use this key", on_click=_apply_key):
+            st.session_state.OPENROUTER_API_KEY = key_input.strip()
+    with col_b:
+        if st.button("Clear key"):
+            st.session_state.OPENROUTER_API_KEY = ""
+            list_models_clean.clear()
+            st.rerun()
+
+    # Also allow env/secrets as fallback; show status
     has_key = bool(
-        (hasattr(st, "secrets") and st.secrets.get("OPENROUTER_API_KEY"))
+        st.session_state.OPENROUTER_API_KEY
+        or (hasattr(st, "secrets") and st.secrets.get("OPENROUTER_API_KEY"))
         or os.environ.get("OPENROUTER_API_KEY")
     )
-    st.info("OPENROUTER_API_KEY found." if has_key else "Add OPENROUTER_API_KEY in Secrets.")
+    if has_key:
+        st.success("API key set (session/env/secrets).")
+    else:
+        st.info("Paste your OPENROUTER_API_KEY above or set it via Secrets.")
+
 
     st.subheader("🧠 Model")
     models = list_models_clean()
@@ -426,7 +458,13 @@ with st.sidebar:
     default_model = pick_model(None)
     model_choice = st.selectbox("OpenRouter model", options=all_opts or [default_model], index=(all_opts or [default_model]).index(default_model) if (all_opts or [default_model]) else 0)
 
-    st.button("🔄 Refresh model list", on_click=lambda: list_models_clean.clear())
+    def _refresh_models():
+        list_models_clean.clear()
+        try:
+            st.toast("Model list refreshed")
+        except Exception:
+            pass
+    st.button("🔄 Refresh model list", on_click=_refresh_models)
 
     st.subheader("⚙️ Run mode")
     mode = st.radio("Choose input mode", ["Recent questions", "Specific IDs"], horizontal=True)
@@ -503,3 +541,4 @@ if run_clicked:
         st.error(f"Run failed: {e!r}")
 
 st.caption("Tip: Add OPENROUTER_API_KEY in your app secrets (Settings → Secrets) before running.")
+
