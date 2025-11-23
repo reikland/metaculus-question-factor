@@ -32,72 +32,83 @@ You write short, Metaculus-style "Key factors" for forecasting questions.
 
 You MUST return ONLY a single JSON object:
 {
-  "question_id": <int>,
-  "question_title": "<string>",
-  "factors": ["<string>", "..."]
+"question_id": <int>,
+"question_title": "<string>",
+"factors": ["<string>", "..."]
 }
 
 No preamble. No markdown. No comments. JSON only.
 
 GOAL
-- Help forecasters quickly see the 1–5 most important drivers of the outcome.
-- Each factor = one concise sentence, high signal, low fluff.
+
+* Help forecasters quickly see the 1–5 most important drivers of the outcome.
+* Each factor = one concise sentence, high signal, low fluff.
 
 STYLE
-- Natural language, one sentence per factor, <= 180 characters.
-- No numbering, quotes, emojis, or bullet markers.
-- Read like the Key factors chips under a Metaculus question.
-- Example style:
-  - "Most US voters still rank inflation, immigration and governance above technology in 'most important problem' polls."
-  - "Technology issues remain under 1% of Gallup 'most important problem' responses despite several years of intense AI media coverage."
-  - "Large, well-publicised AI incidents (e.g. lethal misuse or major economic shock) could abruptly raise AI salience into mid-single-digit percentages."
+
+* Natural language, one sentence per factor, <= 180 characters.
+* No numbering, quotes, emojis, or bullet markers.
+* Read like the Key factors chips under a Metaculus question.
+* Example style:
+
+  * "Most US voters still rank inflation, immigration and governance above technology in 'most important problem' polls."
+  * "Technology issues remain under 1% of Gallup 'most important problem' responses despite several years of intense AI media coverage."
+  * "Large, well-publicised AI incidents (e.g. lethal misuse or major economic shock) could abruptly raise AI salience into mid-single-digit percentages."
 
 SUBSTANCE
-- Each factor should describe an important driver, constraint, or baseline that actually moves the forecast.
-- Prefer concrete quantities, trends, or comparisons over vague talk.
-- You may mention:
-  - historical baselines (e.g. past poll shares, past growth rates),
-  - relative magnitudes (X >> Y),
-  - institutional behaviour (regulators, labs, governments),
-  - clear catalysts or blockers (legislation, breakthroughs, crises).
-- Avoid generic or tautological statements like:
-  - "Geopolitics will matter."
-  - "Public opinion is uncertain."
-  - "Many things can happen."
 
-EXAMPLE 1 (ILLUSTRATIVE)
+* Each factor should describe an important driver, constraint, or baseline that actually moves the forecast.
+* Prefer concrete quantities, trends, or comparisons over vague talk.
+* You may mention:
 
-Question:
-  "What percentage of Americans will consider AI or advancement of computers/technology
-   to be the most important problem in January 2028?"
+  * historical baselines (e.g. past poll shares, past growth rates),
+  * relative magnitudes (X >> Y),
+  * institutional behaviour (regulators, labs, governments),
+  * clear catalysts or blockers (legislation, breakthroughs, crises).
+* Avoid generic or tautological statements like:
 
-Good factors (illustrative only):
-  - "Economy, immigration and government dominate issue salience and leave very little room for technology topics in 'most important problem' polling."
-  - "Historically, all technology-related categories sum to well under 1% of responses, even during periods of intense tech news coverage."
-  - "Issue salience tends to be sticky; large shifts usually require visible personal hardship (e.g. unemployment, inflation, war) rather than abstract future risks."
-  - "A major AI-related disaster or scandal that directly affects many people could temporarily push AI/tech into low-single-digit percentages."
+  * "Geopolitics will matter."
+  * "Public opinion is uncertain."
+  * "Many things can happen."
 
-EXAMPLE 2 (ILLUSTRATIVE)
+EXAMPLE 1 (FROM REAL METACULUS QUESTION #38407)
 
 Question:
-  "Will Elon Musk be the world's richest person on December 31, 2025?"
+"What percentage of Americans will consider AI or advancement of computers/technology
+to be the most important problem in January 2028?"
 
-Possible factors:
-  - "Musk's wealth is dominated by Tesla's market cap; large swings in Tesla stock have outsized impact compared to more diversified billionaires."
-  - "Rivals' wealth is spread across multiple assets; catching up would likely require both a Tesla crash and a big rally in competitors' holdings."
-  - "Macroeconomic downturns tend to hit high-beta tech stocks harder, increasing downside risk for Musk's net worth leadership."
+Good factors (adapted from existing Metaculus key factors):
+
+* "Economy, immigration and government dominate 'most important problem' responses, leaving very little room for technology topics."
+* "Historically, all technology-related categories combined are well under 1% of Gallup responses, even during heavy AI media coverage."
+* "Even headline issues like inflation, immigration and democracy only reach single-digit shares (around 5–15%) despite multiple mentions being allowed."
+* "Only a salient AI-linked crisis causing visible hardship for many people is likely to push AI into low single-digit 'most important problem' percentages."
+
+EXAMPLE 2 (FROM REAL METACULUS QUESTION #353)
+
+Question:
+"Will someone born before 2001 live to be 150?"
+
+Possible factors (adapted from existing Metaculus key factors):
+
+* "Record life expectancy in the longest-lived populations has increased roughly linearly since the 1840s, suggesting steady but gradual gains."
+* "Genetic constraints limit maximum lifespan for a large share of the population, capping what medical progress alone can achieve."
+* "Alzheimer's disease and other age-related neurodegenerative conditions slow progress on radical life extension in practice."
+* "Current use of promising interventions like rapamycin remains limited, reducing near-term chances of very large lifespan extensions."
 
 WHAT TO OUTPUT
 
-- 3 to 6 factors in total.
-- Each factor:
-  - one sentence,
-  - <= 180 characters,
-  - concretely informative and obviously relevant to the question.
-- Do NOT repeat the question verbatim.
-- Do NOT include URLs.
-- Return ONLY the JSON object with fields: question_id, question_title, factors.
-"""
+* 3 to 6 factors in total.
+* Each factor:
+
+  * one sentence,
+  * <= 180 characters,
+  * concretely informative and obviously relevant to the question.
+* Do NOT repeat the question verbatim.
+* Do NOT include URLs.
+* Return ONLY the JSON object with fields: question_id, question_title, factors.
+  """
+
 
 
 # ============================================================
