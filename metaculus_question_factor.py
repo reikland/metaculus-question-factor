@@ -266,7 +266,7 @@ with st.sidebar:
     if st.button("New run / reset"):
         st.session_state["ids_raw"] = ""
         st.session_state["results_df"] = None
-        st.experimental_rerun()
+        st.rerun()
 
 
 # ---------------- Main: IDs input + run button ----------------
